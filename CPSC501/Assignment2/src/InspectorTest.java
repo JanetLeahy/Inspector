@@ -25,15 +25,44 @@ public class InspectorTest {
 
 	
 	@Test
-	public void testBasics() {
+	public void testReadHeaderWithInterfaces() {
 		Inspector inspector = new Inspector();
-		BasicObject obj = new BasicObject();
+		BasicInterfaceObject obj = new BasicInterfaceObject();
 
 		inspector.inspect(obj, true);
 		
+		String expected = "class BasicInterfaceObject";
+		expected += " extends BasicSuperclass";
+		expected += " implements BasicInterface1, BasicInterface2";
+		expected += " {\n}\n";
+		
+		assertEquals(expected, outBytes.toString());
+	}
+	
+	@Test
+	public void testReadSimpleHeader() {
+		Inspector inspector = new Inspector();
+		BasicObject obj = new BasicObject();
+		
+		inspector.inspect(obj, true);
 		String expected = "class BasicObject";
 		expected += " extends BasicSuperclass";
-		expected += " implements BasicInterface1, BasicInterface2 {\n}\n";
+		expected += " {\n}\n";
+
+		assertEquals(expected, outBytes.toString());
+	}
+	
+	
+	@Test
+	public void testFields() {
+		Inspector inspector = new Inspector();
+		FieldObject obj = new FieldObject(0, "Hi");
+
+		inspector.inspect(obj, true);
+		
+		String expected = "class FieldObject";
+		expected += " extends BasicSuperclass";
+		expected +=	" {\n}\n";
 		
 		assertEquals(expected, outBytes.toString());
 	}

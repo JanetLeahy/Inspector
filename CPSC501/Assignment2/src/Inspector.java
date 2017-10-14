@@ -46,7 +46,7 @@ public class Inspector {
 		}
 		
 		Class[] interfaces = classObj.getInterfaces();
-		if (interfaces != null) {
+		if (interfaces.length > 0) {
 			System.out.print(" implements");
 			for (int i=0; i< interfaces.length; i++) {
 				if (i > 0) {
@@ -55,5 +55,11 @@ public class Inspector {
 				System.out.print(" " + interfaces[i].getName());
 			}
 		}
+	}
+	
+	
+	//prints the name, type and modifiers of all the fields in the given object
+	public void printFields(Object obj) {
+		
 	}
 }
