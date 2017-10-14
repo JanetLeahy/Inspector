@@ -56,13 +56,17 @@ public class InspectorTest {
 	@Test
 	public void testFields() {
 		Inspector inspector = new Inspector();
-		FieldObject obj = new FieldObject(0, "Hi");
+		FieldObject obj = new FieldObject();
 
 		inspector.inspect(obj, true);
 		
 		String expected = "class FieldObject";
 		expected += " extends BasicSuperclass";
-		expected +=	" {\n}\n";
+		expected +=	" {\n";
+		expected += "public static int anInteger\n";
+		expected += "private class java.lang.String aString\n";
+		expected += "int anotherInteger\n";
+		expected +=	"}\n";
 		
 		assertEquals(expected, outBytes.toString());
 	}

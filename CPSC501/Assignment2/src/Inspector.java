@@ -1,3 +1,6 @@
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+
 /*
  * Assignment 2 for CPSC501
  * Janet Leahy, 10104311, T06
@@ -25,7 +28,7 @@ public class Inspector {
 		//end of the first line of the class declaration
 		System.out.print(" {\n");
 		
-		
+		printFields(obj);
 		//end of the current class
 		System.out.print("}\n");
 	}
@@ -60,6 +63,17 @@ public class Inspector {
 	
 	//prints the name, type and modifiers of all the fields in the given object
 	public void printFields(Object obj) {
+		Class classObj = obj.getClass();
+		Field[] fields = classObj.getDeclaredFields();
 		
+		for (int i=0; i< fields.length; i++) {
+			int mod = fields[i].getModifiers();
+			if (mod != 0) {
+				//if no modifiers, don't need the space
+				System.out.print(Modifier.toString(mod) + " ");
+			}
+			System.out.print(fields[i].getType() + " ");
+			System.out.print(fields[i].getName() + "\n");
+		}
 	}
 }

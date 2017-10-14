@@ -1,10 +1,9 @@
 
 public class FieldObject extends BasicSuperclass {
-	private int anInteger;
+	public static int anInteger;
 	private String aString;
+	int anotherInteger;
 	
-	public FieldObject(int i, String s) {
-		anInteger = i;
-		aString = s;
+	public FieldObject() {
 	} 
 }
