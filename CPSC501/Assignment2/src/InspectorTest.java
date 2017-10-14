@@ -25,7 +25,7 @@ public class InspectorTest {
 
 	
 	@Test
-	public void test() {
+	public void testBasics() {
 		Inspector inspector = new Inspector();
 		BasicObject obj = new BasicObject();
 
@@ -33,6 +33,7 @@ public class InspectorTest {
 		
 		String expected = "class BasicObject";
 		expected += " extends BasicSuperclass";
+		expected += " implements BasicInterface1, BasicInterface2 {\n}\n";
 		
 		assertEquals(expected, outBytes.toString());
 	}

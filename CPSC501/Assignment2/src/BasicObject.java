@@ -5,7 +5,7 @@
  */
 
 
-public class BasicObject extends BasicSuperclass{
+public class BasicObject extends BasicSuperclass implements BasicInterface1, BasicInterface2{
 	
 	public BasicObject() {
 		//do-nothing constructor

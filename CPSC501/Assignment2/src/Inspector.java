@@ -21,6 +21,21 @@ public class Inspector {
 	 * otherwise, simply returns the object's information
 	 */
 	public void inspect(Object obj, boolean recursive) {
+		printHeader(obj);
+		//end of the first line of the class declaration
+		System.out.print(" {\n");
+		
+		
+		//end of the current class
+		System.out.print("}\n");
+	}
+	
+	
+	
+	
+	//prints the class name of the given object, as well as the names of the 
+	// direct superclass and any interfaces, in a single line
+	public void printHeader(Object obj) {
 		Class classObj = obj.getClass();
 		System.out.print("class " + classObj.getName());
 		
@@ -30,6 +45,15 @@ public class Inspector {
 			System.out.print(" extends " + superclass.getName());
 		}
 		
-		
+		Class[] interfaces = classObj.getInterfaces();
+		if (interfaces != null) {
+			System.out.print(" implements");
+			for (int i=0; i< interfaces.length; i++) {
+				if (i > 0) {
+					System.out.print(",");
+				}
+				System.out.print(" " + interfaces[i].getName());
+			}
+		}
 	}
 }
