@@ -56,19 +56,21 @@ public class InspectorTest {
 	@Test
 	public void testFields() {
 		Inspector inspector = new Inspector();
-		FieldObject obj = new FieldObject();
+		FieldObject obj = new FieldObject(2);
 
 		inspector.inspect(obj, true);
 		
 		String expected = "class FieldObject";
 		expected += " extends BasicSuperclass";
 		expected +=	" {\n";
-		expected += "public static int anInteger\n";
-		expected += "private class java.lang.String aString\n";
-		expected += "int anotherInteger\n";
+		expected += "public static int anInteger = 1\n";
+		expected += "private class java.lang.String aString = XXX\n";
+		expected += "int anotherInteger = 2\n";
+		expected += "class BasicSuperclass obj = BasicObject 1190900417\n";
 		expected +=	"}\n";
 		
-		assertEquals(expected, outBytes.toString());
+		//checks everything up to the hash code
+		assertEquals(expected.substring(0, expected.indexOf("1190900417") - 1), outBytes.toString().substring(0, expected.indexOf("1190900417") - 1));
 	}
 
 }

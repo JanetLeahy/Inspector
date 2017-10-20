@@ -1,9 +1,15 @@
 
 public class FieldObject extends BasicSuperclass {
-	public static int anInteger;
+	public static int anInteger = 1;
 	private String aString;
 	int anotherInteger;
 	
-	public FieldObject() {
+	BasicSuperclass obj;
+	
+	public FieldObject(int i) {
+		aString = "XXX";
+		anotherInteger = i;
+		
+		obj = new BasicObject();
 	} 
 }
