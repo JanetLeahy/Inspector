@@ -87,35 +87,45 @@ public class Inspector {
 				//if no modifiers, don't need the space
 				System.out.print(Modifier.toString(mod) + " ");
 			}
-			System.out.print(fields[i].getType() + " ");
-			System.out.print(fields[i].getName() + " = ");
-
 			fields[i].setAccessible(true);
+			
 			try {
-				Object value = fields[i].get(obj);
+				Object value = fields[i].get(obj);		
 				
-				if (value.getClass() == Integer.class) {
-					System.out.print(fields[i].getInt(obj));
-				} else if (value.getClass() == Double.class) {
-					System.out.print(fields[i].getDouble(obj));
-				} else if (value.getClass() == Short.class) {
-					System.out.print(fields[i].getShort(obj));
-				} else if (value.getClass() == Long.class) {
-					System.out.print(fields[i].getLong(obj));
-				} else if (value.getClass() == Float.class) {
-					System.out.print(fields[i].getFloat(obj));
-				} else if (value.getClass() == Character.class) {
-					System.out.print(fields[i].getChar(obj));
-				} else if (value.getClass() == Boolean.class) {
-					System.out.print(fields[i].getBoolean(obj));
-				} else if (value.getClass() == Byte.class) {
-					System.out.print(fields[i].getByte(obj));
-				} else if (value.getClass() == String.class) {
-					System.out.print((String) value);
+				if (value.getClass().isArray()) {
+					//System.out.print(value.getClass().getComponentType().getName());
+					System.out.print(value.getClass().getName() + " ");
+					System.out.print(fields[i].getName() + " = ");
+					System.out.print("[]");
+					
 				}
 				else {
-					//field contains an object
-					printObject(value);
+					System.out.print(fields[i].getType() + " ");
+					System.out.print(fields[i].getName() + " = ");
+
+					if (value.getClass() == Integer.class) {
+						System.out.print(fields[i].getInt(obj));
+					} else if (value.getClass() == Double.class) {
+						System.out.print(fields[i].getDouble(obj));
+					} else if (value.getClass() == Short.class) {
+						System.out.print(fields[i].getShort(obj));
+					} else if (value.getClass() == Long.class) {
+						System.out.print(fields[i].getLong(obj));
+					} else if (value.getClass() == Float.class) {
+						System.out.print(fields[i].getFloat(obj));
+					} else if (value.getClass() == Character.class) {
+						System.out.print(fields[i].getChar(obj));
+					} else if (value.getClass() == Boolean.class) {
+						System.out.print(fields[i].getBoolean(obj));
+					} else if (value.getClass() == Byte.class) {
+						System.out.print(fields[i].getByte(obj));
+					} else if (value.getClass() == String.class) {
+						System.out.print((String) value);
+					}
+					else {
+						//field contains an object
+						printObject(value);
+					}
 				}
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block

@@ -72,5 +72,23 @@ public class InspectorTest {
 		//checks everything up to the hash code
 		assertEquals(expected.substring(0, expected.indexOf("1190900417") - 1), outBytes.toString().substring(0, expected.indexOf("1190900417") - 1));
 	}
+	
+	@Test
+	public void testArrayFields() {
+		Inspector inspector = new Inspector();
+		ArrayFieldObject obj = new ArrayFieldObject();
+		
+		inspector.inspect(obj, true);
+		
+		String expected = "class ArrayFieldObject";
+		expected += " extends BasicSuperclass";
+		expected +=	" {\n";
+		expected += "private [I anArray = []\n";
+		expected +=	"}\n";
+
+		assertEquals(expected, outBytes.toString());
+		
+	}
+	
 
 }
