@@ -1,3 +1,4 @@
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -34,7 +35,7 @@ public class Inspector {
 			
 			//System.out.println("\n");
 			
-			//printConstructors(obj);
+			printConstructors(obj);
 			
 			//System.out.println("\n");
 			
@@ -174,10 +175,30 @@ public class Inspector {
 				}
 			}
 			System.out.print(")\n");
-
-			
 		}
+	}
+	
+	public void printConstructors(Object obj) {
+		Class classObj = obj.getClass();
+		Constructor[] constructors = classObj.getConstructors();
+		
+		for (int i=0; i< constructors.length; i++) {
+			//indent the methods for readability
+			System.out.print("\t");
 
+			printModifiers(constructors[i].getModifiers());
+			
+			System.out.print(constructors[i].getName() + "(");
+			Object[] paramTypes = constructors[i].getParameterTypes();
+			for (int j=0; j<paramTypes.length; j++) {
+				System.out.print(paramTypes[j]);
+
+				if (j < paramTypes.length-1) {
+					System.out.print(", ");
+				}
+			}
+			System.out.print(")\n");
+		}
 	}
 	
 	

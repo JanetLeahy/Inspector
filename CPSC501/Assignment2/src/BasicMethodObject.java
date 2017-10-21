@@ -9,7 +9,7 @@ public class BasicMethodObject extends BasicSuperclass{
 		System.out.println("Hello world");
 	}
 	
-	public int aMethod(boolean aFlag) {
+	public int aMethod(String aString) {
 		anotherMethod(1,2);
 		return 10;
 	}

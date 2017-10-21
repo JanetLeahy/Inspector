@@ -34,7 +34,9 @@ public class InspectorTest {
 		String expected = "class BasicInterfaceObject";
 		expected += " extends BasicSuperclass";
 		expected += " implements BasicInterface1, BasicInterface2";
-		expected += " {\n}\n\n";
+		expected += " {\n";
+		expected += "\tpublic BasicInterfaceObject()\n";
+		expected +=	"}\n\n";
 		
 		assertEquals(expected, outBytes.toString());
 	}
@@ -47,7 +49,9 @@ public class InspectorTest {
 		inspector.inspect(obj, true);
 		String expected = "class BasicObject";
 		expected += " extends BasicSuperclass";
-		expected += " {\n}\n\n";
+		expected += " {\n";
+		expected += "\tpublic BasicObject()\n";
+		expected +=	"}\n\n";
 
 		assertEquals(expected, outBytes.toString());
 	}
@@ -67,6 +71,7 @@ public class InspectorTest {
 		expected += "\tprivate class java.lang.String aString = XXX\n";
 		expected += "\tint anotherInteger = 2\n";
 		expected += "\tclass BasicSuperclass obj = BasicObject 1190900417\n";
+		expected += "\tpublic FieldObject()\n";
 		expected +=	"}\n\n";
 		
 		//checks everything up to the hash code
@@ -84,6 +89,7 @@ public class InspectorTest {
 		expected += " extends BasicSuperclass";
 		expected +=	" {\n";
 		expected += "\tprivate [I anArray = []\n";
+		expected += "\tpublic ArrayFieldObject()\n";
 		expected +=	"}\n\n";
 
 		assertEquals(expected, outBytes.toString());
@@ -99,7 +105,7 @@ public class InspectorTest {
 		
 		//methods appear in any order, so just check that the result contains these
 		String method1 = "\tpublic static void sayHi()\n";
-		String method2 = "\tpublic int aMethod(boolean)\n";
+		String method2 = "\tpublic int aMethod(class java.lang.String)\n";
 		String method3 = "\tprivate java.lang.String anotherMethod(int, int)\n";
 		
 		assertEquals(outBytes.toString().contains(method1), true);
@@ -107,6 +113,27 @@ public class InspectorTest {
 		assertEquals(outBytes.toString().contains(method3), true);
 	}
 	
+	@Test
+	public void testConstructors() {
+		Inspector inspector = new Inspector();
+		BasicConstructorObject obj = new BasicConstructorObject();
+
+		inspector.inspect(obj, true);
+		
+		//just check the output contains all of these (may appear in a different
+		// order each run)
+		String constructor1 = "\tpublic BasicConstructorObject()\n";
+		String constructor2 = "\tpublic BasicConstructorObject(int)\n";
+		String constructor3 = "\tpublic BasicConstructorObject(class java.lang.String, boolean)\n";
+		String constructor4 = "\tpublic BasicConstructorObject(class BasicObject)\n";
+		
+		assertEquals(outBytes.toString().contains(constructor1), true);
+		assertEquals(outBytes.toString().contains(constructor2), true);
+		assertEquals(outBytes.toString().contains(constructor3), true);
+		assertEquals(outBytes.toString().contains(constructor4), true);
+
+		
+	}
 	
 
 }
