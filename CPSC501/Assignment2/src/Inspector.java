@@ -1,4 +1,5 @@
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 /*
@@ -37,10 +38,10 @@ public class Inspector {
 			
 			//System.out.println("\n");
 			
-			//printMethods(obj);
+			printMethods(obj);
 			
 			//end of the current class
-			System.out.print("}\n");
+			System.out.print("}\n\n");
 		}
 		else {
 			//just print the object name and identityHashCode 
@@ -82,6 +83,9 @@ public class Inspector {
 		Field[] fields = classObj.getDeclaredFields();
 		
 		for (int i=0; i< fields.length; i++) {
+			//indent the fields for readability
+			System.out.print("\t");
+			
 			int mod = fields[i].getModifiers();
 			if (mod != 0) {
 				//if no modifiers, don't need the space
@@ -134,7 +138,6 @@ public class Inspector {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}	
-
 			System.out.print("\n");
 		}
 	}
@@ -143,5 +146,39 @@ public class Inspector {
 	public void printObject(Object obj) {
 		System.out.print(obj.getClass().getName() + " " + System.identityHashCode(obj));
 	}
+	
+	//prints the name, modifiers, return type, parameter types and execptions 
+	// thrown for each of the object's methods
+	public void printMethods(Object obj) {
+		Class classObj = obj.getClass();
+		Method[] methods = classObj.getDeclaredMethods();
+
+		for (int i=0; i< methods.length; i++) {
+			//indent the methods for readability
+			System.out.print("\t");
+
+			int mod = methods[i].getModifiers();
+			if (mod != 0) {
+				//if no modifiers, don't need the space
+				System.out.print(Modifier.toString(mod) + " ");
+			}
+			
+			System.out.print(methods[i].getReturnType().getName() + " ");
+			System.out.print(methods[i].getName() + "(");
+			Object[] paramTypes = methods[i].getParameterTypes();
+			for (int j=0; j<paramTypes.length; j++) {
+				System.out.print(paramTypes[j]);
+
+				if (j < paramTypes.length-1) {
+					System.out.print(", ");
+				}
+			}
+			System.out.print(")\n");
+
+			
+		}
+
+	}
+	
 	
 }

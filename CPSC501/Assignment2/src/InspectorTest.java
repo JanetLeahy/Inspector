@@ -34,7 +34,7 @@ public class InspectorTest {
 		String expected = "class BasicInterfaceObject";
 		expected += " extends BasicSuperclass";
 		expected += " implements BasicInterface1, BasicInterface2";
-		expected += " {\n}\n";
+		expected += " {\n}\n\n";
 		
 		assertEquals(expected, outBytes.toString());
 	}
@@ -47,7 +47,7 @@ public class InspectorTest {
 		inspector.inspect(obj, true);
 		String expected = "class BasicObject";
 		expected += " extends BasicSuperclass";
-		expected += " {\n}\n";
+		expected += " {\n}\n\n";
 
 		assertEquals(expected, outBytes.toString());
 	}
@@ -63,11 +63,11 @@ public class InspectorTest {
 		String expected = "class FieldObject";
 		expected += " extends BasicSuperclass";
 		expected +=	" {\n";
-		expected += "public static int anInteger = 1\n";
-		expected += "private class java.lang.String aString = XXX\n";
-		expected += "int anotherInteger = 2\n";
-		expected += "class BasicSuperclass obj = BasicObject 1190900417\n";
-		expected +=	"}\n";
+		expected += "\tpublic static int anInteger = 1\n";
+		expected += "\tprivate class java.lang.String aString = XXX\n";
+		expected += "\tint anotherInteger = 2\n";
+		expected += "\tclass BasicSuperclass obj = BasicObject 1190900417\n";
+		expected +=	"}\n\n";
 		
 		//checks everything up to the hash code
 		assertEquals(expected.substring(0, expected.indexOf("1190900417") - 1), outBytes.toString().substring(0, expected.indexOf("1190900417") - 1));
@@ -83,12 +83,30 @@ public class InspectorTest {
 		String expected = "class ArrayFieldObject";
 		expected += " extends BasicSuperclass";
 		expected +=	" {\n";
-		expected += "private [I anArray = []\n";
-		expected +=	"}\n";
+		expected += "\tprivate [I anArray = []\n";
+		expected +=	"}\n\n";
 
 		assertEquals(expected, outBytes.toString());
 		
 	}
+	
+	@Test
+	public void testMethods() {
+		Inspector inspector = new Inspector();
+		BasicMethodObject obj = new BasicMethodObject();
+		
+		inspector.inspect(obj, true);
+		
+		//methods appear in any order, so just check that the result contains these
+		String method1 = "\tpublic static void sayHi()\n";
+		String method2 = "\tpublic int aMethod(boolean)\n";
+		String method3 = "\tprivate java.lang.String anotherMethod(int, int)\n";
+		
+		assertEquals(outBytes.toString().contains(method1), true);
+		assertEquals(outBytes.toString().contains(method2), true);
+		assertEquals(outBytes.toString().contains(method3), true);
+	}
+	
 	
 
 }

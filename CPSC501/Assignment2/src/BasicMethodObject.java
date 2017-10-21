@@ -1,0 +1,21 @@
+
+public class BasicMethodObject extends BasicSuperclass{
+			
+	public BasicMethodObject() {
+		//do nothing
+	}
+	
+	public static void sayHi() {
+		System.out.println("Hello world");
+	}
+	
+	public int aMethod(boolean aFlag) {
+		anotherMethod(1,2);
+		return 10;
+	}
+	
+	private String anotherMethod(int x1, int x2) {
+		return "x1 + x2 = " + (x1 + x2);
+	}
+			
+}
