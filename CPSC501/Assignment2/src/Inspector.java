@@ -86,11 +86,8 @@ public class Inspector {
 			//indent the fields for readability
 			System.out.print("\t");
 			
-			int mod = fields[i].getModifiers();
-			if (mod != 0) {
-				//if no modifiers, don't need the space
-				System.out.print(Modifier.toString(mod) + " ");
-			}
+			printModifiers(fields[i].getModifiers());
+			
 			fields[i].setAccessible(true);
 			
 			try {
@@ -147,6 +144,13 @@ public class Inspector {
 		System.out.print(obj.getClass().getName() + " " + System.identityHashCode(obj));
 	}
 	
+	public void printModifiers(int mod) {
+		if (mod != 0) {
+			//if no modifiers, don't need the space
+			System.out.print(Modifier.toString(mod) + " ");
+		}
+	}
+	
 	//prints the name, modifiers, return type, parameter types and execptions 
 	// thrown for each of the object's methods
 	public void printMethods(Object obj) {
@@ -157,12 +161,8 @@ public class Inspector {
 			//indent the methods for readability
 			System.out.print("\t");
 
-			int mod = methods[i].getModifiers();
-			if (mod != 0) {
-				//if no modifiers, don't need the space
-				System.out.print(Modifier.toString(mod) + " ");
-			}
-			
+			printModifiers(methods[i].getModifiers());
+						
 			System.out.print(methods[i].getReturnType().getName() + " ");
 			System.out.print(methods[i].getName() + "(");
 			Object[] paramTypes = methods[i].getParameterTypes();
