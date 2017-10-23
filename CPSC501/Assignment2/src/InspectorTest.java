@@ -85,15 +85,13 @@ public class InspectorTest {
 		
 		inspector.inspect(obj, false);
 		
-		String expected = "class ArrayFieldObject";
-		expected += " extends BasicSuperclass";
-		expected +=	" {\n";
-		expected += "\tprivate [I anArray = []\n";
-		expected += "\tpublic ArrayFieldObject()\n";
-		expected +=	"}\n\n";
-
-		assertEquals(expected, outBytes.toString());
+		String array1 = "private int[] anArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]";
+		String array2 = "public java.lang.Object[] anObjArray = [BasicObject ";
+		String array3 = "private boolean[][] multiArray = [[false, false], [false, false], [true, false], [false, false], [false, false]]";
 		
+		assertEquals(outBytes.toString().contains(array1), true);
+		assertEquals(outBytes.toString().contains(array2), true);
+		assertEquals(outBytes.toString().contains(array3), true);
 	}
 	
 	@Test
@@ -149,9 +147,37 @@ public class InspectorTest {
 		//checks everything up to the hash code
 		assertEquals(outBytes.toString().contains("(recurse)"), true);
 		assertEquals(outBytes.toString().contains(expected), true);
-		
 	}
 	
-	
+	@Test
+	public void testArrayRecursion() {
+		Inspector inspector = new Inspector();
+		ArrayFieldObject obj = new ArrayFieldObject();
+		
+		inspector.inspect(obj, true);
+		
+		String array2 = "public java.lang.Object[] anObjArray = [BasicObject ";
+		String expectedObj1 =  "class BasicObject";
+		expectedObj1 += " extends BasicSuperclass";
+		expectedObj1 += " {\n";
+		expectedObj1 += "\tpublic BasicObject()\n";
+		expectedObj1 +=	"}\n\n";
+		
+		
+		String expectedObj2 = "class FieldObject";
+		expectedObj2 += " extends BasicSuperclass";
+		expectedObj2 +=	" {\n";
+		expectedObj2 += "\tpublic static int anInteger = 1\n";
+		expectedObj2 += "\tprivate class java.lang.String aString = XXX\n";
+		expectedObj2 += "\tint anotherInteger = 6\n";
+		expectedObj2 += "\tclass BasicSuperclass obj = BasicObject ";
+		//simply stops before the changing identityHashMap
+		
+		
+		assertEquals(outBytes.toString().contains(array2), true);
+		assertEquals(outBytes.toString().contains(" (recurse)"), true);
+		assertEquals(outBytes.toString().contains(expectedObj1), true);
+		assertEquals(outBytes.toString().contains(expectedObj2), true);
+	}
 
 }

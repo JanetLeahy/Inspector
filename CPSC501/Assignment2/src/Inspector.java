@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -13,8 +14,7 @@ import java.util.LinkedList;
  * @author Janet Leahy
  * 
  * TODO:
- * Array capabilities
- * Recursion list to hold objects, superclasses
+ * Recursion list to hold superclasses, or just add methods/fields/constructors to main class?
  * 
  */
 
@@ -60,8 +60,15 @@ public class Inspector {
 		// (i.e. objects stored in fields if recursive is true)and
 		// inspects them
 
+		if (!toInspect.isEmpty()) {
+			System.out.print("Other objects referred to:\n---------------------------\n");
+		}
+		
 		while (!toInspect.isEmpty()) {
-			inspect(toInspect.removeFirst(), false);
+			//recurse using a new inspector object, so the linked list
+			// not overwritten
+			Inspector subInspector = new Inspector(); 
+			subInspector.inspect(toInspect.removeFirst(), false);
 		}
 	}
 
@@ -109,13 +116,33 @@ public class Inspector {
 			fields[i].setAccessible(true);
 			
 			try {
-				Object value = fields[i].get(obj);		
+				Object value = fields[i].get(obj);
 				
 				if (value.getClass().isArray()) {
-					//System.out.print(value.getClass().getComponentType().getName());
-					System.out.print(value.getClass().getName() + " ");
-					System.out.print(fields[i].getName() + " = ");
-					System.out.print("[]");
+					Class componentType = value.getClass();
+					String classname = value.getClass().getName();
+					int dimension = 0;
+					
+					//finds the base component type, even for multi-dimensional arrays
+					for (int j=0; j<classname.length(); j++) {
+						if (classname.charAt(j) == '[') {
+							componentType = componentType.getComponentType();
+							dimension++; 
+						}
+					}
+										
+					System.out.print(componentType.getName());
+					//prints the square brackets to indicate dimension
+					for (int j=0; j<dimension; j++) {
+						System.out.print("[]");
+					}
+					System.out.print(" " + fields[i].getName() + " = ");
+					
+					boolean isObjArray = classname.contains("L");
+					printArray(value, dimension, (recursive&&isObjArray));
+					if (recursive&&isObjArray) {
+						System.out.print(" (recurse)");
+					}
 					
 				}
 				else {
@@ -163,6 +190,41 @@ public class Inspector {
 		}
 	}
 	
+	public void printArray(Object array, int dim, boolean recursive) {
+
+		System.out.print("[");
+
+		int len = Array.getLength(array);
+		for(int j=0; j<len; j++) {
+			if (dim == 1) {
+				Object elem = Array.get(array, j);
+				if (elem.getClass().equals(Integer.class) || elem.getClass().equals(Double.class) ||
+						elem.getClass().equals(Long.class) || elem.getClass().equals(Short.class) ||
+						elem.getClass().equals(Float.class) || elem.getClass().equals(Byte.class) ||
+						elem.getClass().equals(Character.class) || elem.getClass().equals(Boolean.class) ||
+						elem.getClass().equals(String.class)
+						) {
+					System.out.print(elem);
+				}
+				else {
+					printObject(elem);
+					if (recursive) {
+						toInspect.add(elem);
+					}
+				}
+				
+			}
+			else if (dim > 1) {
+				printArray(Array.get(array, j), dim-1, recursive);
+			}
+			//don't need the comma for the last element
+			if (j<len-1) {
+				System.out.print(", ");
+			}
+		}
+		System.out.print("]");
+	}
+
 	//prints the object's name and identityHashCode
 	public void printObject(Object obj) {
 		System.out.print(obj.getClass().getName() + " " + System.identityHashCode(obj));
