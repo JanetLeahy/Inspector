@@ -29,7 +29,7 @@ public class InspectorTest {
 		Inspector inspector = new Inspector();
 		BasicInterfaceObject obj = new BasicInterfaceObject();
 
-		inspector.inspect(obj, true);
+		inspector.inspect(obj, false);
 		
 		String expected = "class BasicInterfaceObject";
 		expected += " extends BasicSuperclass";
@@ -46,7 +46,7 @@ public class InspectorTest {
 		Inspector inspector = new Inspector();
 		BasicObject obj = new BasicObject();
 		
-		inspector.inspect(obj, true);
+		inspector.inspect(obj, false);
 		String expected = "class BasicObject";
 		expected += " extends BasicSuperclass";
 		expected += " {\n";
@@ -62,7 +62,7 @@ public class InspectorTest {
 		Inspector inspector = new Inspector();
 		FieldObject obj = new FieldObject(2);
 
-		inspector.inspect(obj, true);
+		inspector.inspect(obj, false);
 		
 		String expected = "class FieldObject";
 		expected += " extends BasicSuperclass";
@@ -71,7 +71,7 @@ public class InspectorTest {
 		expected += "\tprivate class java.lang.String aString = XXX\n";
 		expected += "\tint anotherInteger = 2\n";
 		expected += "\tclass BasicSuperclass obj = BasicObject 1190900417\n";
-		expected += "\tpublic FieldObject()\n";
+		expected += "\tpublic FieldObject(int)\n";
 		expected +=	"}\n\n";
 		
 		//checks everything up to the hash code
@@ -83,7 +83,7 @@ public class InspectorTest {
 		Inspector inspector = new Inspector();
 		ArrayFieldObject obj = new ArrayFieldObject();
 		
-		inspector.inspect(obj, true);
+		inspector.inspect(obj, false);
 		
 		String expected = "class ArrayFieldObject";
 		expected += " extends BasicSuperclass";
@@ -101,7 +101,7 @@ public class InspectorTest {
 		Inspector inspector = new Inspector();
 		BasicMethodObject obj = new BasicMethodObject();
 		
-		inspector.inspect(obj, true);
+		inspector.inspect(obj, false);
 		
 		//methods appear in any order, so just check that the result contains these
 		String method1 = "\tpublic static void sayHi()\n";
@@ -118,7 +118,7 @@ public class InspectorTest {
 		Inspector inspector = new Inspector();
 		BasicConstructorObject obj = new BasicConstructorObject();
 
-		inspector.inspect(obj, true);
+		inspector.inspect(obj, false);
 		
 		//just check the output contains all of these (may appear in a different
 		// order each run)
@@ -131,9 +131,27 @@ public class InspectorTest {
 		assertEquals(outBytes.toString().contains(constructor2), true);
 		assertEquals(outBytes.toString().contains(constructor3), true);
 		assertEquals(outBytes.toString().contains(constructor4), true);
+	}
+	
+	@Test
+	public void testRecursion() {
+		Inspector inspector = new Inspector();
+		FieldObject obj = new FieldObject(2);
 
+		inspector.inspect(obj, true);
+				
+		String expected = "class BasicObject";
+		expected += " extends BasicSuperclass";
+		expected += " {\n";
+		expected += "\tpublic BasicObject()\n";
+		expected +=	"}\n\n";
+		
+		//checks everything up to the hash code
+		assertEquals(outBytes.toString().contains("(recurse)"), true);
+		assertEquals(outBytes.toString().contains(expected), true);
 		
 	}
+	
 	
 
 }

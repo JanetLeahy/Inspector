@@ -2,6 +2,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.LinkedList;
 
 /*
  * Assignment 2 for CPSC501
@@ -11,10 +12,22 @@ import java.lang.reflect.Modifier;
  * 
  * @author Janet Leahy
  * 
+ * TODO:
+ * Array capabilities
+ * Recursion list to hold objects, superclasses
+ * 
  */
 
 
 public class Inspector {
+	//stores the objects stored in fields in a linked list,
+	// from which they can be inspected after the main inspection is complete
+	// if recursive is set to true
+	LinkedList<Object> toInspect;
+	
+	public Inspector() {
+		toInspect = new LinkedList<Object>();
+	}
 
 	/*
 	 * Inspects the object passed to find out its name, functions, 
@@ -26,30 +39,32 @@ public class Inspector {
 	 * otherwise, simply returns the object's information
 	 */
 	public void inspect(Object obj, boolean recursive) {
-		if (recursive) {
-			printHeader(obj);
-			//end of the first line of the class declaration
-			System.out.print(" {\n");
+		printHeader(obj);
+		//end of the first line of the class declaration
+		System.out.print(" {\n");
 
-			printFields(obj);
-			
-			//System.out.println("\n");
-			
-			printConstructors(obj);
-			
-			//System.out.println("\n");
-			
-			printMethods(obj);
-			
-			//end of the current class
-			System.out.print("}\n\n");
-		}
-		else {
-			//just print the object name and identityHashCode 
-			printObject(obj);
+		printFields(obj, recursive);
+
+		//System.out.println("\n");
+
+		printConstructors(obj);
+
+		//System.out.println("\n");
+
+		printMethods(obj);
+
+		//end of the current class
+		System.out.print("}\n\n");
+		
+		//reads all objects stored in the linked list of objects
+		// (i.e. objects stored in fields if recursive is true)and
+		// inspects them
+
+		while (!toInspect.isEmpty()) {
+			inspect(toInspect.removeFirst(), false);
 		}
 	}
-	
+
 	
 	
 	
@@ -79,7 +94,9 @@ public class Inspector {
 	
 	
 	//prints the name, type and modifiers of all the fields in the given object
-	public void printFields(Object obj) {
+	// if recursive is set to true, add any objects stored in fields to the 
+	// recursion list, and they will be fully inspected later
+	public void printFields(Object obj, boolean recursive) {
 		Class classObj = obj.getClass();
 		Field[] fields = classObj.getDeclaredFields();
 		
@@ -125,8 +142,14 @@ public class Inspector {
 						System.out.print((String) value);
 					}
 					else {
-						//field contains an object
+						//field contains an object, so investigate depending on
+						// how recursion flag is set
 						printObject(value);
+						if (recursive) {
+							//add to recursion list
+							System.out.print(" (recurse)");
+							toInspect.add(value);
+						}
 					}
 				}
 			} catch (IllegalArgumentException e) {
@@ -152,7 +175,7 @@ public class Inspector {
 		}
 	}
 	
-	//prints the name, modifiers, return type, parameter types and execptions 
+	//prints the name, modifiers, return type, parameter types and exceptions 
 	// thrown for each of the object's methods
 	public void printMethods(Object obj) {
 		Class classObj = obj.getClass();
