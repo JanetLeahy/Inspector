@@ -3,6 +3,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /*
@@ -45,11 +46,7 @@ public class Inspector {
 
 		printFields(obj, recursive);
 
-		//System.out.println("\n");
-
 		printConstructors(obj);
-
-		//System.out.println("\n");
 
 		printMethods(obj);
 
@@ -105,18 +102,27 @@ public class Inspector {
 	// recursion list, and they will be fully inspected later
 	public void printFields(Object obj, boolean recursive) {
 		Class classObj = obj.getClass();
-		Field[] fields = classObj.getDeclaredFields();
+		Field[] ownFields = classObj.getDeclaredFields();
+		ArrayList<Field> fields = new ArrayList<Field>();
 		
-		for (int i=0; i< fields.length; i++) {
+		//copy the object's own fields into the ArrayList structure
+		for (int i=0; i < ownFields.length; i++) {
+			fields.add(ownFields[i]);
+		}
+		
+		//addInterfaceFields(fields, classObj);
+		//addSuperclassFields(fields, classObj);
+		
+		for (int i=0; i< fields.size(); i++) {
 			//indent the fields for readability
 			System.out.print("\t");
 			
-			printModifiers(fields[i].getModifiers());
+			printModifiers(fields.get(i).getModifiers());
 			
-			fields[i].setAccessible(true);
+			fields.get(i).setAccessible(true);
 			
 			try {
-				Object value = fields[i].get(obj);
+				Object value = fields.get(i).get(obj);
 				
 				if (value.getClass().isArray()) {
 					Class componentType = value.getClass();
@@ -136,35 +142,34 @@ public class Inspector {
 					for (int j=0; j<dimension; j++) {
 						System.out.print("[]");
 					}
-					System.out.print(" " + fields[i].getName() + " = ");
+					System.out.print(" " + fields.get(i).getName() + " = ");
 					
 					boolean isObjArray = classname.contains("L");
 					printArray(value, dimension, (recursive&&isObjArray));
 					if (recursive&&isObjArray) {
 						System.out.print(" (recurse)");
 					}
-					
 				}
 				else {
-					System.out.print(fields[i].getType() + " ");
-					System.out.print(fields[i].getName() + " = ");
+					System.out.print(fields.get(i).getType() + " ");
+					System.out.print(fields.get(i).getName() + " = ");
 
 					if (value.getClass() == Integer.class) {
-						System.out.print(fields[i].getInt(obj));
+						System.out.print(fields.get(i).getInt(obj));
 					} else if (value.getClass() == Double.class) {
-						System.out.print(fields[i].getDouble(obj));
+						System.out.print(fields.get(i).getDouble(obj));
 					} else if (value.getClass() == Short.class) {
-						System.out.print(fields[i].getShort(obj));
+						System.out.print(fields.get(i).getShort(obj));
 					} else if (value.getClass() == Long.class) {
-						System.out.print(fields[i].getLong(obj));
+						System.out.print(fields.get(i).getLong(obj));
 					} else if (value.getClass() == Float.class) {
-						System.out.print(fields[i].getFloat(obj));
+						System.out.print(fields.get(i).getFloat(obj));
 					} else if (value.getClass() == Character.class) {
-						System.out.print(fields[i].getChar(obj));
+						System.out.print(fields.get(i).getChar(obj));
 					} else if (value.getClass() == Boolean.class) {
-						System.out.print(fields[i].getBoolean(obj));
+						System.out.print(fields.get(i).getBoolean(obj));
 					} else if (value.getClass() == Byte.class) {
-						System.out.print(fields[i].getByte(obj));
+						System.out.print(fields.get(i).getByte(obj));
 					} else if (value.getClass() == String.class) {
 						System.out.print((String) value);
 					}
@@ -180,10 +185,8 @@ public class Inspector {
 					}
 				}
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}	
 			System.out.print("\n");
@@ -212,7 +215,6 @@ public class Inspector {
 						toInspect.add(elem);
 					}
 				}
-				
 			}
 			else if (dim > 1) {
 				printArray(Array.get(array, j), dim-1, recursive);
@@ -237,21 +239,121 @@ public class Inspector {
 		}
 	}
 	
+	//reads any fields from the object's interfaces and adds them to the list
+	// of available fields for the original object
+	public void addInterfaceFields(ArrayList<Field> fields, Class classObj) {
+		Class[] interfaces = classObj.getInterfaces();
+		
+		for (int i=0; i<interfaces.length; i++) {
+			Field[] interfaceFields = interfaces[i].getDeclaredFields();
+			for (int j=0; j<interfaceFields.length; j++) {
+				fields.add(interfaceFields[j]);
+			}
+		}
+	}
+	
+	//reads any methods from the object's interfaces and adds them to the list
+	// of available methods for the original object
+	public void addInterfaceMethods(ArrayList<Method> methods, Class classObj) {
+		Class[] interfaces = classObj.getInterfaces();
+		
+		for (int i=0; i<interfaces.length; i++) {
+			Method[] interfaceMethods = interfaces[i].getDeclaredMethods();
+			for (int j=0; j<interfaceMethods.length; j++) {
+				methods.add(interfaceMethods[j]);
+			}
+		}
+	}
+	
+	//reads any constructors from the object's interfaces and adds them to the list
+	// of available constructors for the original object
+	public void addInterfaceConstructors(ArrayList<Constructor> constructors, Class classObj) {
+		Class[] interfaces = classObj.getInterfaces();
+		
+		for (int i=0; i<interfaces.length; i++) {
+			Constructor[] interfaceConstructors = interfaces[i].getConstructors();
+			for (int j=0; j<interfaceConstructors.length; j++) {
+				constructors.add(interfaceConstructors[j]);
+			}
+		}
+	}
+	
+	
+	//reads any fields from the object's superclass and adds them to the list
+	// of available fields for the original object. If given class does not
+	// inherit directly from Object, search recursively and add its superclass'
+	// superclasses' fields to the list
+	public void addSuperclassFields(ArrayList<Field> fields, Class classObj) {
+		Class superClass = classObj.getSuperclass();
+		Field[] superFields = superClass.getDeclaredFields();
+				
+		for (int i=0; i<superFields.length; i++) {
+			fields.add(superFields[i]);
+		}
+		
+		//if a higher superclass exists, recursively add its fields too
+		if (!superClass.equals(Object.class)) {
+			addSuperclassFields(fields, superClass);
+		}
+	}
+	
+	//reads any methods from the object's superclass and adds them to the list
+	// of available methods for the original object. If given class does not
+	// inherit directly from Object, search recursively and add its superclass'
+	// superclasses' methods to the list
+	public void addSuperclassMethods(ArrayList<Method> methods, Class classObj) {
+		Class superClass = classObj.getSuperclass();
+		Method[] superMethods = superClass.getDeclaredMethods();
+				
+		for (int i=0; i<superMethods.length; i++) {
+			methods.add(superMethods[i]);
+		}
+		
+		//if a higher superclass exists, recursively add its fields too
+		if (!superClass.equals(Object.class)) {
+			addSuperclassMethods(methods, superClass);
+		}
+	}
+	
+	//reads any constructors from the object's superclass and adds them to the list
+	// of available constructors for the original object. If given class does not
+	// inherit directly from Object, search recursively and add its superclass'
+	// superclasses' constructors to the list
+	public void addSuperclassConstructors(ArrayList<Constructor> constructors, Class classObj) {
+		Class superClass = classObj.getSuperclass();
+		Constructor[] superConstructors = superClass.getConstructors();
+				
+		for (int i=0; i<superConstructors.length; i++) {
+			constructors.add(superConstructors[i]);
+		}
+		
+		//if a higher superclass exists, recursively add its fields too
+		if (!superClass.equals(Object.class)) {
+			addSuperclassConstructors(constructors, superClass);
+		}
+	}
+	
+	
 	//prints the name, modifiers, return type, parameter types and exceptions 
 	// thrown for each of the object's methods
 	public void printMethods(Object obj) {
 		Class classObj = obj.getClass();
-		Method[] methods = classObj.getDeclaredMethods();
+		Method[] ownMethods = classObj.getDeclaredMethods();
+		ArrayList<Method> methods = new ArrayList<Method>();
+		
+		//copy the object's own fields into the ArrayList structure
+		for (int i=0; i < ownMethods.length; i++) {
+			methods.add(ownMethods[i]);
+		}
 
-		for (int i=0; i< methods.length; i++) {
+		for (int i=0; i< methods.size(); i++) {
 			//indent the methods for readability
 			System.out.print("\t");
 
-			printModifiers(methods[i].getModifiers());
-						
-			System.out.print(methods[i].getReturnType().getName() + " ");
-			System.out.print(methods[i].getName() + "(");
-			Object[] paramTypes = methods[i].getParameterTypes();
+			printModifiers(methods.get(i).getModifiers());
+			System.out.print(methods.get(i).getReturnType().getName() + " ");
+			System.out.print(methods.get(i).getName() + "(");
+			Object[] paramTypes = methods.get(i).getParameterTypes();
 			for (int j=0; j<paramTypes.length; j++) {
 				System.out.print(paramTypes[j]);
 
@@ -265,16 +367,21 @@ public class Inspector {
 	
 	public void printConstructors(Object obj) {
 		Class classObj = obj.getClass();
-		Constructor[] constructors = classObj.getConstructors();
+		Constructor[] ownConstructors = classObj.getConstructors();
+		ArrayList<Constructor> constructors = new ArrayList<Constructor>();
 		
-		for (int i=0; i< constructors.length; i++) {
+		for (int i=0; i<ownConstructors.length; i++) {
+			constructors.add(ownConstructors[i]);
+		}
+		
+		for (int i=0; i< constructors.size(); i++) {
 			//indent the methods for readability
 			System.out.print("\t");
 
-			printModifiers(constructors[i].getModifiers());
+			printModifiers(constructors.get(i).getModifiers());
 			
-			System.out.print(constructors[i].getName() + "(");
-			Object[] paramTypes = constructors[i].getParameterTypes();
+			System.out.print(constructors.get(i).getName() + "(");
+			Object[] paramTypes = constructors.get(i).getParameterTypes();
 			for (int j=0; j<paramTypes.length; j++) {
 				System.out.print(paramTypes[j]);
 
