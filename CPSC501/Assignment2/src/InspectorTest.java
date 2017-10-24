@@ -169,5 +169,40 @@ public class InspectorTest {
 		assertEquals(outBytes.toString().contains(expectedObj1), true);
 		assertEquals(outBytes.toString().contains(expectedObj2), true);
 	}
+	
+	@Test
+	public void testInterfaceValues() {
+		BasicInterfaceObject obj = new BasicInterfaceObject();
+		Inspector inspector = new Inspector();
+		inspector.inspect(obj, false);
+		
+		String func1 = "public static int giveTwo()\n";
+		String func2 = "public java.lang.String testFunc()\n";
+		
+		String field1 = "public static final boolean aField = true\n";
+		
+		assertEquals(outBytes.toString().contains(func1), true);
+		assertEquals(outBytes.toString().contains(func2), true);
+		assertEquals(outBytes.toString().contains(field1), true);
+	}
+	
+	@Test
+	public void testSuperclassValues() {
+		BasicObject obj = new BasicObject();
+		Inspector inspector = new Inspector();
+		inspector.inspect(obj, false);
+		
+		String func1 = "public static void aSuperMethod(class java.lang.String)\n";
+		String func2 = "public java.lang.String toString()\n";
+		
+		String field1 = "private int theBestInt = 42\n";
+		
+		String constructor1 = "public BasicSuperclass()\n";
+		
+		assertEquals(outBytes.toString().contains(func1), true);
+		assertEquals(outBytes.toString().contains(func2), true);
+		assertEquals(outBytes.toString().contains(field1), true);
+		assertEquals(outBytes.toString().contains(constructor1), true);
+	}
 
 }
