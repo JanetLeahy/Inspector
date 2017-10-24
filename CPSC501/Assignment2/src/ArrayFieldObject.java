@@ -1,5 +1,5 @@
 
-public class ArrayFieldObject extends BasicSuperclass{
+public class ArrayFieldObject {
 	private int[] anArray;
 	public Object[] anObjArray;
 	private boolean[][] multiArray;

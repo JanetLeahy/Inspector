@@ -1,5 +1,5 @@
 
-public class BasicConstructorObject extends BasicSuperclass {
+public class BasicConstructorObject {
 
 	public BasicConstructorObject() {
 		//no parameter constructor

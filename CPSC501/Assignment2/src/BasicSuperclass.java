@@ -6,5 +6,13 @@
 
 
 public class BasicSuperclass {
-
+	private int theBestInt;
+	
+	public BasicSuperclass() {
+		theBestInt = 42;
+	}
+	
+	public static void aSuperMethod(String s) {
+		//do nothing
+	}
 }

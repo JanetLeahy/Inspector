@@ -1,5 +1,5 @@
 
-public class BasicMethodObject extends BasicSuperclass{
+public class BasicMethodObject {
 			
 	public BasicMethodObject() {
 		//do nothing

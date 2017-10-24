@@ -10,4 +10,8 @@ public class BasicInterfaceObject extends BasicSuperclass implements BasicInterf
 	public BasicInterfaceObject() {
 		//do-nothing constructor
 	}
+	
+	public String testFunc() {
+		return "Hello world";
+	}
 }

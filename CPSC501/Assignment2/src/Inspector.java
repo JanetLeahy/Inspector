@@ -14,9 +14,6 @@ import java.util.LinkedList;
  * 
  * @author Janet Leahy
  * 
- * TODO:
- * Recursion list to hold superclasses, or just add methods/fields/constructors to main class?
- * 
  */
 
 
@@ -110,8 +107,8 @@ public class Inspector {
 			fields.add(ownFields[i]);
 		}
 		
-		//addInterfaceFields(fields, classObj);
-		//addSuperclassFields(fields, classObj);
+		addInterfaceFields(fields, classObj);
+		addSuperclassFields(fields, classObj);
 		
 		for (int i=0; i< fields.size(); i++) {
 			//indent the fields for readability
@@ -346,6 +343,9 @@ public class Inspector {
 			methods.add(ownMethods[i]);
 		}
 
+		addInterfaceMethods(methods, classObj);
+		addSuperclassMethods(methods, classObj);
+		
 		for (int i=0; i< methods.size(); i++) {
 			//indent the methods for readability
 			System.out.print("\t");
@@ -373,6 +373,9 @@ public class Inspector {
 		for (int i=0; i<ownConstructors.length; i++) {
 			constructors.add(ownConstructors[i]);
 		}
+
+		addInterfaceConstructors(constructors, classObj);
+		addSuperclassConstructors(constructors, classObj);
 		
 		for (int i=0; i< constructors.size(); i++) {
 			//indent the methods for readability
