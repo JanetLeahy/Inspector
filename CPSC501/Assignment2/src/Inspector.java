@@ -8,7 +8,7 @@ import java.util.LinkedList;
 
 /*
  * Assignment 2 for CPSC501
- * Janet Leahy, 10104311, T06
+ * Janet Leahy, 10104311, T03
  * 
  * Main class, containing the method used to perform the inspections
  * 
@@ -122,7 +122,11 @@ public class Inspector {
 			try {
 				Object value = fields.get(i).get(obj);
 				
-				if (value.getClass().isArray()) {
+				if (value == null) {
+					System.out.print(" = null");
+				}
+				
+				else if (value.getClass().isArray()) {
 					Class componentType = value.getClass();
 					String classname = value.getClass().getName();
 					int dimension = 0;
@@ -199,7 +203,10 @@ public class Inspector {
 		for(int j=0; j<len; j++) {
 			if (dim == 1) {
 				Object elem = Array.get(array, j);
-				if (elem.getClass().equals(Integer.class) || elem.getClass().equals(Double.class) ||
+				if (elem == null) {
+					System.out.print("null");
+				}
+				else if (elem.getClass().equals(Integer.class) || elem.getClass().equals(Double.class) ||
 						elem.getClass().equals(Long.class) || elem.getClass().equals(Short.class) ||
 						elem.getClass().equals(Float.class) || elem.getClass().equals(Byte.class) ||
 						elem.getClass().equals(Character.class) || elem.getClass().equals(Boolean.class) ||
